@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ketma-ket Savollar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .answer {
+            display: none;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        #stats {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div id="content"></div>
+<div id="stats">
+    <p>Umumiy savollar: <span id="total-questions"></span></p>
+    <p>Qolgan savollar: <span id="remaining-questions"></span></p>
+</div>
+
+<div id="question-buttons">
+    <button onclick="nextQuestion()">Keyingi savol</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Yurak glikozidlari nima?",
+            answer: "Osimlik mahsuloti murakkab efirsimin vositalar."
+        },
+        {
+            question: "Yurakka qanday tasir korsatadi?",
+            answer: "Spetsifik kardiotonik."
+        },
+        {
+            question: "Qanday osimlik mahsuloti?",
+            answer: "-"
+        },
+        {
+            question: "Klassifikatsiyasi?",
+            answer: "Suvda eruvchanligi va tasir davomiyligiga."
+        },
+        {
+            question: "Eruvchanligi boyicha tasnifi?",
+            answer: "Polyarl, nopolyar va aralash."
+        },
+        {
+            question: "Polyar glikozidlar?",
+            answer: "Strofantin, korglikon."
+        },
+        {
+            question: "Nopolyar glikozidlar?",
+            answer: "Digitoksin, atsetildigitoksin."
+        },
+        {
+            question: "Aralash glikozidlar?",
+            answer: "Digoksin, izolanid."
+        },
+        {
+            question: "Uzoq tasirli glikozidlar va tasir davomiyligi?",
+            answer: "Digitoksin, atsetildigitoksin, 14-21 kun."
+        },
+        {
+            question: "Ortacha tasirli glikozidlar va tasir davomiyligi?",
+            answer: "Digoksin va salanid, 6-8 kun."
+        },
+        {
+            question: "Qisqa tasirli glikozidlar va tasir davomiyligi?",
+            answer: "Strofantin, korglikon, 2-3 kun."
+        },
+        {
+            question: "Glikozidlarning musbat inotrop tasiri haqida?",
+            answer: "Yurak qisqarish kuchi va tezligini oshirish."
+        },
+        {
+            question: "Glikozidlar musbat inotrop effekti nimaga asoslangan?",
+            answer: "Kalsiy ionlarini kardiomiotsitlarda oshirish."
+        },
+        {
+            question: "YuQS oshishi qanday korsatkichlarni ozgartiradi?",
+            answer: "Umumiy va minutlik hajm va diurez ortishi."
+        },
+        {
+            question: "YuQS oshishi hisobiga qanday korsatkichlar susayadi?",
+            answer: "Oxirgi diastolik va sistolik hajm, venoz bosimni pasayishi, dilatatsiyalangan yurak olchamlari kichrayishi, sianoz va nafas qisishi."
+        },
+        {
+            question: "Glikozidlarning musbat inotrop tasirini qanday jarayonni yaxshilaydi?",
+            answer: "Miokardiotsitlardagi energiya almashinuvi va energoplastik jarayonlar aktivlashishi, oqsil sintezini stimulyasiyasi."
+        },
+        {
+            question: "Manfiy xronotrop effekt nima?",
+            answer: "YuQS sonini kamaytirish."
+        },
+        {
+            question: "Bu effekt qanday kelib chiadi?",
+            answer: "Sinus tugunini togridan-togri susaytirish va vagus nervini reflektor kuchaytirib."
+        },
+        {
+            question: "Manfiy dromotrop effekt nima?",
+            answer: "Impulslar otkazuvchanligining susayishi."
+        },
+        {
+            question: "Bu effekt qanday kelib chikadi?",
+            answer: "Atrioventrikulyar tugun hamda tutamda refraktorlik davrini uzaytirish."
+        },
+        {
+            question: "Subaortal stenoz va mitral stenozida qanday effekt hisobiga qarshi korsatma boladi?",
+            answer: "Musbat inotrop effekt."
+        },
+        {
+            question: "Atrioventrikulyar blokada 2-daraja va WPW sindromida qanday effekt qarshi korsatma hisoblanadi?",
+            answer: "Manfiy dromotrop effekt."
+        },
+        {
+            question: "Nima uchun opka shishi va kardiogen shoklarda glikozidlarni qollab bolmaydi?",
+            answer: "Glikozidlar yurak zarb hajmini oshira olmagan vaqtda togridan-togri vazokonstriktor tasir etib, yurakka orticha yuklanish beradi."
+        },
+        {
+            question: "Musbat batmotrop effekt?",
+            answer: "Miokard avtomatizmigi va otkazuv sistemasi ortishi."
+        },
+        {
+            question: "Glikozidlarni tasirida EKG da qanday ozgarishlar kuzatiladi?",
+            answer: "T intervalining qisqarishi, P-Q intervalining ortishi, amplitudaning pasayishi, ST segmentining izoliniyadan pasayishi."
+        },
+{ question: "Glikozidlar xazm traktining qaysi qismida soriladi?", answer: "Ingichka ichakning yuqori qismida." },
+
+{ question: "Glikozidlar toliq sorilishi nimaga bogliq?", answer: "Glikozidlarning lipofilligi va hazm trakti holati." },
+
+{ question: "Digitoksin sorilish %?", answer: "90-100%." },
+
+{ question: "Digoksin sorilish %?", answer: "60-85%." },
+
+{ question: "Izolanid sorilish %?", answer: "15-45%." },
+
+{ question: "Strofantin va korglikon sorilish %?", answer: "3-5%." },
+
+{ question: "Nima uchun yurak etishmovchiligining 3-darajasida glikozidlar sorilishi buzilgan?", answer: "Mezentral qon aylanishi buzilishi va ichak devori shishi." },
+
+{ question: "Glikozidlar jonatish yollari?", answer: "Enteral va parenteral." },
+
+{ question: "Plazmada digitoksinni oqsillar bilan boglanish %?", answer: "95-97%." },
+
+{ question: "Digoksinni oqsillar bilan boglanish %?", answer: "20-25%." },
+
+{ question: "Strofantin va korglikon oqsil bilan boglanish %?", answer: "Kuchsiz." },
+
+{ question: "Glikozidlar bilan davolashni 1-etapi nimani bildiradi?", answer: "Glikozidlarning toliq terapevtik dozada jonatish boqsichi." },
+
+{ question: "Glikozidlar bilan davolashni 2-bosqichi nimani bildiradi?", answer: "Glikozidlarni ushlab turuvchi dozada jonatish bosqichi." },
+
+{ question: "Digitalizatsiyaning qanday usullarini bilasiz?", answer: "Yuqori, orta va past." },
+
+{ question: "Digitalizatsiyaning yuqori tempi nima?", answer: "Bunda birinchi dozasi 1-sutkada 3 mahal, 1-mahal yarim doza va 2 mahal 4/1 doza." },
+
+{ question: "Digitalizatsiyaning ortacha tempi deb nimaga aytiladi?", answer: "Bunda toliq terapevtik doza 3 kunda jonatiladi: 1-kun - 1/2, 2-3 kunlari 4/1 dozada." },
+
+{ question: "Digitalizatsiyaning sust tempi nima?", answer: "Terapevtik doza 7-10 kun beriladi." },
+
+{ question: "Glikozidlarga toyinishni qanday parametrlar belgilaydi?", answer: "YuQS 65-75 min, diurezni 150% ga ortishi, nafas siqishi susayishi." },
+
+{ question: "Sust digitalizatsiyada toyinish qachon kuzatiladi?", answer: "Strofantinda 5-kun, digogsinda 6-7-kun, digoksinda 2-3 xaftada." },
+
+{ question: "Buyrak funksiyasi buzilgan vaqtda qanday glikozidlar tanlov preparati hisoblanadi?", answer: "Lipofil." },
+
+{ question: "Jigar funksiyasi buzilgan vaqtda qanday glikozidlar tanlov preparati hisoblanadi?", answer: "Gidrofil." },
+
+{ question: "Glikozidlarning nojoya tasiri?", answer: "Digitalis zaharlanish." },
+
+{ question: "Digitalisli intoksikatsiyaga olib boruvchi 4 ta omil?", answer: "Keksalik, buyrak etishmovchiligi, jigar etishmovchiligi, gipokaliemiya va gipomagniemiya." },
+
+{ question: "Digitalisli intoksikatsiyaga olib boruvchi 4 ta omil?", answer: "Miokardning yalliglanishli zararlanishi, yurak etishmovchiligining oxirgi bosqichlari, miokard ishemiyasi, opka etishmovchiligi, opka yuragi, atsidoz." },
+
+{ question: "Digitalisli intoksikatsiyaga olib boruvchi 4 ta omil?", answer: "Gipotireoz, kislota-asos muvozanati buzilishi, giperkalsiemiya, gipomagniemiya, simpotadrenal sistema aktivlanishi, boshqa preparatlar bilan noadekvat kombinatsiya." },
+{ question: "Digitalisli intoksikatsiya belgilari?", answer: "kardial va nokardial." },
+{ question: "Digitalisdan zaxarlanishni kardial belgilari?", answer: "asta-sekin bradikardiyaga aylanuvchi kuchli bradikardiya, ekstrasistoliya." },
+{ question: "Digitalisdan zaxarlanishni kardial belgilari?", answer: "atrioventrikulyar tugun blokadasi, xatto toliq blokadagacha, tugunchali blokada, xilpillovchi aritmiya." },
+{ question: "Digitalisdan zaxarlanishda hazm sistemasida ozgarishlar?", answer: "kongil aynishi, ishtaxa pasayishi, qusish, diareya, qorinda og'riq." },
+{ question: "Digitalisdan zaxarlanishda nevrologik belgilar?", answer: "holsizlik, qorquv xissi, gallyusinatsiya, bosh og'rig'i." },
+{ question: "Rang korishdagi ozgarishlar?", answer: "jismlarning sariq yashil rangga kirib qolishi, fotofobiya, midriaz, korish o'tkirligining pasayishi." },
+{ question: "Digitalisdan zaxarlanishda EKG ozgarishlari?", answer: "asta-sekin taxisistoliyaga o'tuvchi keskin bradikardiya." },
+{ question: "Digitalisdan zaxarlanishni kardial belgilari?", answer: "atrioventrikulyar o'tkazuvchanlik pasayishi, sistola davomiyligi ortishi." },
+{ question: "Digitalisdan zaxarlanishni kardial belgilari?", answer: "ST keskin pasayishi, manfiy T tish." },
+{ question: "Digitalisdan zaxarlanishni kardial belgilari?", answer: "qorinchali ekstrasistoliya." },
+{ question: "Digitalisdan zaxarlanishda davo?", answer: "glikozidlarni organizmdan tezkor chiqarib yuborish va uning miokardga zaxarli tasirini kamaytirish." },
+{ question: "Ritm buzilishlari qanday davolanadi?", answer: "vena ichiga tomchilatib kaliy va ichishga, AV blokadadan tashqari." },
+{ question: "Ritm buzilishlari qanday davolanadi?", answer: "vena ichiga oqim bilan 100-150 mg difenin yuboriladi, ozgarish kuzatilmasa 10 minutdan keyin takrorlanadi." },
+{ question: "Ritm buzilishlari qanday davolanadi?", answer: "qorinchali ekstrasistoliyada lidokain jonatiladi." },
+{ question: "Ritm buzilishlari qanday davolanadi?", answer: "supraventrikulyar taxikardiyada beta-blokatorlar, masalan anaprilin vena ichiga oqim bilan 1-5 mg 10 ml." },
+{ question: "Ritm buzilishlari qanday davolanadi?", answer: "ekstrasistoliya etmozin vena ichiga 2-4 ml 2,5 % li 10 ml natriy xlor izotonik eritma." },
+{ question: "AV blokada qanday davolanadi?", answer: "vena ichiga 1ml 1% li atropin eritmasi, agarda natija bo'lmasa endokardial kardiostimulyasiya qollaniladi." },
+{ question: "Glikozidlar tasirini toxtatish va kalsiy ionlarini bog'lash qanday bo'ladi?", answer: "EDTA vena ichiga tomchilatib 2-4 gr 500 ml 5% li glukoza eritmasi." },
+{ question: "Glikozidlar tasirini toxtatish va kalsiy ionlarini bog'lash qanday bo'ladi?", answer: "natriy limon kislitasi vena ichiga 50 dan 250 ml gacha 2% li glyukoza eritmasi jonatiladi." },
+{ question: "Qanday sufigidril donatorlarni qollaniladi?", answer: "unitiol 1ml 5% li /10kg jonatiladi." },
+{ question: "Glikozidlar sorilishini susaytiruvchi preparatlar?", answer: "vazelin moyi, xolesteramin." },
+{ question: "Glikozidlarning davo effektivligini baholovchi 3 ta usul?", answer: "YuQS dinamikasi, sianoz va nafas etishmovchiligi darajasi, diurez darajasi." },
+{ question: "Glikozidlarning davo effektivligini baholovchi 3 ta usul?", answer: "jigar olchamlari, periferik shishlar darajasi, bemor umumiy holati." },
+{ question: "Glikozidlarni qollashga 3 ta korsatma?", answer: "yurak etishmovchiligi, xilpillovchi aritmiya, bolmacha va AV paroksizmal blokadasi." },
+{ question: "Glikozidlarni qollashga 3 ta korsatma?", answer: "miokard infarkti, stenokardiya, miokardit." },
+{ question: "Glikozidlarni qollashga qarshi korsatma?", answer: "kardiogen shok." },
+{ question: "Glikozidlarni qollashga qarshi korsatma?", answer: "50 dan past bradikardiya." },
+{ question: "Glikozidlarni qollashga qarshi korsatma?", answer: "AV blokada 2-3 daraja." },
+{ question: "Glikozidlarni qollashga qarshi korsatma?", answer: "WRW va MAC sindromi." },
+{ question: "Glikozidlarni qollashga qarshi korsatma?", answer: "nostabil stenokardiya." },
+{ question: "Qorinchalar qon bilan olishida qanday mehanik tosiq glikozidlarni qollashga qarshi korsatma bo'ladi?", answer: "konstriktiv perikardit." },
+{ question: "Qorinchalar qon bilan olishida qanday mehanik tosiq glikozidlarni qollashga qarshi korsatma bo'ladi?", answer: "yurak tamponadasi." },
+{ question: "Qorinchalar qon bilan olishida qanday mehanik tosiq glikozidlarni qollashga qarshi korsatma bo'ladi?", answer: "idiopatik gipertrofik kardiomiopatiya." },
+{ question: "Qorinchalar qon bilan olishida qanday mehanik tosiq glikozidlarni qollashga qarshi korsatma bo'ladi?", answer: "dekompensatsiyasiz izolyasiyalangan mitral stenoz." },
+{ question: "Qorinchalar qon bilan olishida qanday mexanik tosiq glikozidlarni qollashga qarshi korsatma bo'ladi?", answer: "gipertrofiyalangan subaortal stenoz." },
+{ question: "Glikozidlarning boshqa preparatlar bilan ozaro tasir korinishi?", answer: "fiziko-ximik mos kelmaslik." },
+{ question: "Glikozidlarning boshqa preparatlar bilan ozaro tasir korinishi?", answer: "yaxshi natijali effekt." },
+{ question: "Glikozidlarning boshqa preparatlar bilan ozaro tasir korinishi?", answer: "yomon natijali effekt." },
+{ question: "Glikozidlar qaysi preparatlar bilan fiziko-ximik mos emas?", answer: "eufillin, askorbin kislota, glyukoza gipertonik, natriy gidrokarbonat." },
+{ question: "Glikozidlar qaysi preparatlar bilan yaxshi effekt beradi?", answer: "kaliy xlorid, natriy sitrat." },
+{ question: "Glikozidlar qaysi preparatlar bilan yaxshi effekt beradi?", answer: "EDTA, atropin sulfat." },
+{ question: "Glikozidlar qaysi preparatlar bilan yaxshi effekt beradi?", answer: "difenin, vitamin V1." },
+{ question: "Glikozidlar qaysi preparatlar bilan yaxshi effekt beradi?", answer: "vitamin V6, V12, E." },
+{ question: "Glikozidlar qaysi preparatlar bilan yaxshi effekt beradi?", answer: "anaboliq steroidlar." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "antatsidlar, xolesteramin." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "tinchlantiruvchilar, serukal." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "adrenomimetiklar, eufillin." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "antixolinesteraz preparatlar, diuretiklar." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "GKS, xinidin." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "MOC induktorlari, kalsiy tuzlari." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "valeriana, antikoagulyantlar." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "kalsiy antagonistlari, kordaron." },
+{ question: "Glikozidlar qaysi preparatlar bilan yomon effekt beradi?", answer: "neomitsin, tetratsiklin." }
+    ];
+
+    
+    let currentQuestionIndex = 0;
+
+    const contentDiv = document.getElementById('content');
+    const totalQuestionsSpan = document.getElementById('total-questions');
+    const remainingQuestionsSpan = document.getElementById('remaining-questions');
+
+    function displayQuestion(index) {
+        contentDiv.innerHTML = ''; // Oldingi savolni tozalash
+        const item = questions[index];
+
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+        questionDiv.innerHTML = `<strong>${item.question}</strong> <button onclick="toggleAnswer()">Javobni ko'rsatish</button>`;
+        
+        const answerDiv = document.createElement('div');
+        answerDiv.classList.add('answer');
+        answerDiv.id = `answer`;
+        answerDiv.innerText = item.answer;
+
+        questionDiv.appendChild(answerDiv);
+        contentDiv.appendChild(questionDiv);
+
+        // Savollar sonini yangilash
+        updateStats();
+    }
+
+    function toggleAnswer() {
+        const answerDiv = document.getElementById('answer');
+        if (answerDiv.style.display === 'none' || answerDiv.style.display === '') {
+            answerDiv.style.display = 'block';
+        } else {
+            answerDiv.style.display = 'none';
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            displayQuestion(currentQuestionIndex);
+        } else {
+            alert("Bu oxirgi savol!");
+        }
+    }
+
+    function updateStats() {
+        totalQuestionsSpan.innerText = questions.length;
+        remainingQuestionsSpan.innerText = questions.length - (currentQuestionIndex + 1);
+    }
+
+    // Dastlabki savolni ko'rsatish
+    displayQuestion(currentQuestionIndex);
+</script>
+
+</body>
+</html>
